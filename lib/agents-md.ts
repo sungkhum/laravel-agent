@@ -217,7 +217,18 @@ export function buildDocTree(files: { relativePath: string }[]): DocSection[] {
 
   for (const file of files) {
     const parts = file.relativePath.split(/[/\\]/)
-    if (parts.length < 2) continue
+    if (parts.length === 1) {
+      const rootKey = '.'
+      if (!sections.has(rootKey)) {
+        sections.set(rootKey, {
+          name: rootKey,
+          files: [],
+          subsections: [],
+        })
+      }
+      sections.get(rootKey)!.files.push({ relativePath: file.relativePath })
+      continue
+    }
 
     const topLevelDir = parts[0]
 
@@ -296,7 +307,7 @@ export function generateClaudeMdIndex(data: ClaudeMdIndexData): string {
   )
   const targetFile = outputFile || 'AGENTS.md'
   parts.push(
-    `If docs missing, run this command first: npx @sungkhum/laravel-agent agents-md --output ${targetFile}`
+    `If docs missing, run this command first: npx github:sungkhum/laravel-agent agents-md --output ${targetFile}`
   )
 
   const allFiles = collectAllFilesFromSections(sections)
@@ -352,7 +363,9 @@ function hasExistingIndex(content: string): boolean {
 }
 
 function wrapWithMarkers(content: string): string {
-  return `${START_MARKER}${content}${END_MARKER}`
+  return `${START_MARKER}
+${content}
+${END_MARKER}`
 }
 
 export function injectIntoClaudeMd(

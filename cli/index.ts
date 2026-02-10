@@ -17,8 +17,8 @@ function printHelp(): void {
       '  -h, --help            Show help',
       '',
       'Examples:',
-      '  npx @sungkhum/laravel-agent agents-md --output AGENTS.md',
-      '  npx @sungkhum/laravel-agent agents-md --version 10.x --output AGENTS.md',
+      '  npx github:sungkhum/laravel-agent agents-md --output AGENTS.md',
+      '  npx github:sungkhum/laravel-agent agents-md --version 10.x --output AGENTS.md',
     ].join('\n')
   )
 }

@@ -1,5 +1,5 @@
 /**
- * CLI handler for `npx @sungkhum/laravel-agent agents-md`.
+ * CLI handler for `npx github:sungkhum/laravel-agent agents-md`.
  * See ../lib/agents-md.ts for the core logic.
  */
 
@@ -59,7 +59,7 @@ export async function runAgentsMd(options: AgentsMdOptions): Promise<void> {
     if (!options.output) {
       throw new BadInput(
         'When using --version, --output is also required.\n' +
-          'Example: npx @sungkhum/laravel-agent agents-md --version 10.x --output AGENTS.md'
+          'Example: npx github:sungkhum/laravel-agent agents-md --version 10.x --output AGENTS.md'
       )
     }
     laravelVersion = options.version
@@ -69,7 +69,7 @@ export async function runAgentsMd(options: AgentsMdOptions): Promise<void> {
     if (!detected.version) {
       throw new BadInput(
         'Could not detect Laravel version. Use --version to specify.\n' +
-          `Example: npx @sungkhum/laravel-agent agents-md --version 10.x --output ${options.output}`
+          `Example: npx github:sungkhum/laravel-agent agents-md --version 10.x --output ${options.output}`
       )
     }
     laravelVersion = detected.version
@@ -145,7 +145,7 @@ async function promptForOptions(
   const detectedVersion = versionResult.version
 
   console.log(
-    pc.cyan('\n@sungkhum/laravel-agent agents-md - Laravel Documentation for AI Agents\n')
+    pc.cyan('\ngithub:sungkhum/laravel-agent agents-md - Laravel Documentation for AI Agents\n')
   )
 
   if (detectedVersion) {

@@ -5,5 +5,5 @@
 - Before writing code, quickly scan the project structure, then consult the relevant doc files from `./.laravel-docs`.
 
 <!-- LARAVEL-AGENTS-MD-START -->
-[Laravel Docs Index]|root: ./.laravel-docs|STOP. What you remember about Laravel is WRONG for this project. Always search docs and read before any task.|If docs missing, run this command first: npx @sungkhum/laravel-agent agents-md --output AGENTS.md
+[Laravel Docs Index]|root: ./.laravel-docs|STOP. What you remember about Laravel is WRONG for this project. Always search docs and read before any task.|If docs missing, run this command first: npx github:sungkhum/laravel-agent agents-md --output AGENTS.md
 <!-- LARAVEL-AGENTS-MD-END -->
