@@ -15,6 +15,7 @@ import {
   generateClaudeMdIndex,
   injectIntoClaudeMd,
   ensureGitignoreEntry,
+  mergeExtraDocs,
 } from '../lib/agents-md'
 
 export interface AgentsMdOptions {
@@ -23,6 +24,8 @@ export interface AgentsMdOptions {
 }
 
 const DOCS_DIR_NAME = '.laravel-docs'
+const EXTRA_DOCS_DIR_NAME = '.laravel-docs-extra'
+const EXTRA_DOCS_TARGET_DIR = ''
 
 class BadInput extends Error {
   constructor(message: string) {
@@ -108,6 +111,13 @@ export async function runAgentsMd(options: AgentsMdOptions): Promise<void> {
     throw new BadInput(`Failed to pull docs: ${pullResult.error}`)
   }
 
+  const mergedExtras = mergeExtraDocs({
+    cwd,
+    docsPath,
+    extraDocsDir: EXTRA_DOCS_DIR_NAME,
+    targetSubdir: EXTRA_DOCS_TARGET_DIR,
+  })
+
   const docFiles = collectDocFiles(docsPath)
   const sections = buildDocTree(docFiles)
 
@@ -130,6 +140,11 @@ export async function runAgentsMd(options: AgentsMdOptions): Promise<void> {
     : `${formatSize(sizeBefore)} → ${formatSize(sizeAfter)}`
 
   console.log(`${pc.green('✓')} ${action} ${pc.bold(targetFile)} (${sizeInfo})`)
+  if (mergedExtras.merged) {
+    console.log(
+      `${pc.green('✓')} Included extra docs from ${pc.bold(EXTRA_DOCS_DIR_NAME)}`
+    )
+  }
   if (gitignoreResult.updated) {
     console.log(
       `${pc.green('✓')} Added ${pc.bold(DOCS_DIR_NAME)} to .gitignore`

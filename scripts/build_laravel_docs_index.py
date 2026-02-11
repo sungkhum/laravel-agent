@@ -5,9 +5,11 @@ from __future__ import annotations
 
 import argparse
 import os
+import shutil
 from pathlib import Path
 
 DOCS_ROOT = Path(".laravel-docs")
+EXTRA_DOCS_ROOT = Path(".laravel-docs-extra")
 AGENTS_PATH = Path("AGENTS.md")
 START_MARKER = "<!-- LARAVEL_DOCS_INDEX_START -->"
 END_MARKER = "<!-- LARAVEL_DOCS_INDEX_END -->"
@@ -29,6 +31,23 @@ def _iter_docs(root: Path) -> dict[str, list[str]]:
         key = "." if rel_dir == Path(".") else rel_dir.as_posix()
         entries[key] = doc_files
     return dict(sorted(entries.items(), key=lambda item: item[0]))
+
+
+def _merge_extra_docs(docs_root: Path) -> bool:
+    if not EXTRA_DOCS_ROOT.exists():
+        return False
+    for entry in EXTRA_DOCS_ROOT.iterdir():
+        destination = docs_root / entry.name
+        if destination.exists():
+            if destination.is_dir():
+                shutil.rmtree(destination)
+            else:
+                destination.unlink()
+        if entry.is_dir():
+            shutil.copytree(entry, destination, dirs_exist_ok=True)
+        else:
+            shutil.copy2(entry, destination)
+    return True
 
 
 def _build_index(entries: dict[str, list[str]], root_display: str) -> str:
@@ -81,6 +100,7 @@ def _display_root(docs_root: Path) -> str:
 
 
 def build_and_inject_index(docs_root: Path, display_root: str | None = None) -> None:
+    _merge_extra_docs(docs_root)
     entries = _iter_docs(docs_root)
     if not entries:
         raise SystemExit(f"No .md or .mdx docs found under {docs_root}.")

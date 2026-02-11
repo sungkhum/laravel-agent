@@ -93,6 +93,14 @@ interface PullResult {
   error?: string
 }
 
+interface MergeExtraDocsResult {
+  merged: boolean
+  sourcePath?: string
+  targetPath?: string
+}
+
+const DEFAULT_EXTRA_DOCS_DIR = '.laravel-docs-extra'
+
 export async function pullDocs(options: PullOptions): Promise<PullResult> {
   const { cwd, version: versionOverride, docsDir } = options
 
@@ -191,6 +199,43 @@ async function cloneDocsRepo(branch: string, destDir: string): Promise<void> {
       fs.rmSync(tempDir, { recursive: true })
     }
   }
+}
+
+export function mergeExtraDocs(options: {
+  cwd: string
+  docsPath: string
+  extraDocsDir?: string
+  targetSubdir?: string
+}): MergeExtraDocsResult {
+  const extraDirName = options.extraDocsDir ?? DEFAULT_EXTRA_DOCS_DIR
+  const extraDocsPath = path.isAbsolute(extraDirName)
+    ? extraDirName
+    : path.join(options.cwd, extraDirName)
+
+  if (!fs.existsSync(extraDocsPath)) {
+    return { merged: false }
+  }
+
+  const targetSubdir = options.targetSubdir?.trim()
+  if (!targetSubdir || targetSubdir === '.' || targetSubdir === './') {
+    const entries = fs.readdirSync(extraDocsPath)
+    for (const entry of entries) {
+      const source = path.join(extraDocsPath, entry)
+      const destination = path.join(options.docsPath, entry)
+      fs.cpSync(source, destination, { recursive: true })
+    }
+    return { merged: true, sourcePath: extraDocsPath, targetPath: options.docsPath }
+  }
+
+  const targetPath = path.join(options.docsPath, targetSubdir)
+
+  if (fs.existsSync(targetPath)) {
+    fs.rmSync(targetPath, { recursive: true })
+  }
+
+  fs.cpSync(extraDocsPath, targetPath, { recursive: true })
+
+  return { merged: true, sourcePath: extraDocsPath, targetPath }
 }
 
 export function collectDocFiles(dir: string): { relativePath: string }[] {

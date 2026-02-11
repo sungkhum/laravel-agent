@@ -21,6 +21,12 @@ This will:
 - Inject it into your target markdown file (e.g. `AGENTS.md`)
 - Add `.laravel-docs/` to `.gitignore` if missing
 
+## Custom docs
+
+Place additional markdown files under `.laravel-docs-extra/`. When you run
+`agents-md`, the contents are copied into `.laravel-docs/` before
+indexing, so they are included in the generated docs index.
+
 ## Requirements
 
 - Node.js 18+ (recommended)
